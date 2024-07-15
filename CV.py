@@ -1,5 +1,5 @@
 import streamlit as st
-from PIL import Image
+from PIL import Image, ImageOps
 import albumentations as A
 import numpy as np
 import io
@@ -48,35 +48,38 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Streamlit app
-# st.markdown('<div class="title">Image Augmentation App</div>', unsafe_allow_html=True)
-
 # Checkbox options for augmentations
 rotate = st.checkbox("Rotate", value=True, help="Rotate the image randomly within a specified range.")
-horizontal_flip = st.checkbox("Horizontal Flip", value=True, help="Flip the image horizontally.")
+horizontal_flip = st.checkbox("Horizontal Flip", value=True, help="Tilt the image horizontally.")
 vertical_flip = st.checkbox("Vertical Flip", value=True, help="Flip the image vertically.")
 brightness_contrast = st.checkbox("Random Brightness/Contrast", value=True, help="Apply random brightness and contrast adjustments.")
-zoom = st.checkbox("Zoom", value=True, help="Zoom into the image randomly within a specified range.")
+zoom = st.checkbox("Ultra Zoom", value=True, help="Zoom into the image very closely.")
+black_and_white = st.checkbox("Black and White", value=True, help="Convert the image to black and white.")
+
+
+
 
 # Build the augmentation pipeline based on user's selection
 augmentation_list = []
 if rotate:
-    augmentation_list.append(A.Rotate(limit=45, p=1.0))  # Always apply rotation
+    augmentation_list.append(A.Rotate(limit=90, p=1.0))  # Always apply rotation up to 90 degrees
 if horizontal_flip:
-    augmentation_list.append(A.HorizontalFlip(p=1.0))  # Always apply horizontal flip
+    augmentation_list.append(A.HorizontalFlip(p=0.5))  # Tilt the image horizontally
 if vertical_flip:
     augmentation_list.append(A.VerticalFlip(p=1.0))  # Always apply vertical flip
 if brightness_contrast:
     augmentation_list.append(A.RandomBrightnessContrast(brightness_limit=0.3, contrast_limit=0.3, p=1.0))  # Maximum brightness/contrast adjustment
 if zoom:
-    augmentation_list.append(A.RandomScale(scale_limit=0.3, p=1.0))  # Maximum zoom
+    augmentation_list.append(A.RandomCrop(height=512, width=512, p=1.0))  # Random crop for ultra zoom
+if black_and_white:
+    augmentation_list.append(A.ToGray(p=1.0))  # Convert image to black and white
 
 augmentation_pipeline = A.Compose(augmentation_list)
 
 # Function to apply augmentations
-def augment_image(image):
+def augment_image(image, augmentation):
     image_np = np.array(image)
-    augmented = augmentation_pipeline(image=image_np)['image']
+    augmented = augmentation(image=image_np)['image']
     return Image.fromarray(augmented)
 
 uploaded_files = st.file_uploader("Upload Images", type=["jpg", "jpeg", "png"], accept_multiple_files=True)
@@ -88,9 +91,9 @@ if uploaded_files:
         for uploaded_file in uploaded_files:
             image = Image.open(uploaded_file)
             
-            # Augment the image multiple times (e.g., 4 versions per image)
-            for i in range(5):
-                augmented_image = augment_image(image)
+            # Augment the image with selected transformations
+            for transformation in augmentation_list:
+                augmented_image = augment_image(image, transformation)
                 
                 # Save the augmented image to a BytesIO object
                 img_bytes = io.BytesIO()
@@ -98,7 +101,9 @@ if uploaded_files:
                 img_bytes.seek(0)
                 
                 # Add the image to the zip file
-                zf.writestr(f"aug_{i}_{uploaded_file.name}", img_bytes.read())
+                # Use the transformation name as part of the file name
+                transformation_name = transformation.__class__.__name__.lower()
+                zf.writestr(f"{transformation_name}_{uploaded_file.name}", img_bytes.read())
 
     zip_buffer.seek(0)
 
