@@ -6,7 +6,7 @@ import io
 import zipfile
 
 st.markdown('''# **Image Augmentation App**
-Select the Augmentation you need.
+Choose the Transformations to Apply:.
 ''')
 
 st.markdown("""
