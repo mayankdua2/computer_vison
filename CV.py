@@ -49,7 +49,7 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Streamlit app
-#st.markdown('<div class="title">Image Augmentation App</div>', unsafe_allow_html=True)
+# st.markdown('<div class="title">Image Augmentation App</div>', unsafe_allow_html=True)
 
 # Checkbox options for augmentations
 rotate = st.checkbox("Rotate", value=True, help="Rotate the image randomly within a specified range.")
@@ -58,22 +58,18 @@ vertical_flip = st.checkbox("Vertical Flip", value=True, help="Flip the image ve
 brightness_contrast = st.checkbox("Random Brightness/Contrast", value=True, help="Apply random brightness and contrast adjustments.")
 zoom = st.checkbox("Zoom", value=True, help="Zoom into the image randomly within a specified range.")
 
-# Slider for zoom range
-if zoom:
-    zoom_range = st.slider("Zoom Range", 0.1, 1.0, (0.8, 1.0), 0.1, help="Select the zoom range.")
-
 # Build the augmentation pipeline based on user's selection
 augmentation_list = []
 if rotate:
-    augmentation_list.append(A.Rotate(limit=45, p=0.5))
+    augmentation_list.append(A.Rotate(limit=45, p=1.0))  # Always apply rotation
 if horizontal_flip:
-    augmentation_list.append(A.HorizontalFlip(p=0.5))
+    augmentation_list.append(A.HorizontalFlip(p=1.0))  # Always apply horizontal flip
 if vertical_flip:
-    augmentation_list.append(A.VerticalFlip(p=0.5))
+    augmentation_list.append(A.VerticalFlip(p=1.0))  # Always apply vertical flip
 if brightness_contrast:
-    augmentation_list.append(A.RandomBrightnessContrast(p=0.5))
+    augmentation_list.append(A.RandomBrightnessContrast(brightness_limit=0.3, contrast_limit=0.3, p=1.0))  # Maximum brightness/contrast adjustment
 if zoom:
-    augmentation_list.append(A.RandomScale(scale_limit=(zoom_range[0] - 1, zoom_range[1] - 1), p=0.5))
+    augmentation_list.append(A.RandomScale(scale_limit=0.3, p=1.0))  # Maximum zoom
 
 augmentation_pipeline = A.Compose(augmentation_list)
 
