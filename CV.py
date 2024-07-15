@@ -49,12 +49,12 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Checkbox options for augmentations
-rotate = st.checkbox("Rotate", value=True, help="Rotate the image randomly within a specified range.")
-horizontal_flip = st.checkbox("Horizontal Flip", value=True, help="Tilt the image horizontally.")
-vertical_flip = st.checkbox("Vertical Flip", value=True, help="Flip the image vertically.")
-brightness_contrast = st.checkbox("Random Brightness/Contrast", value=True, help="Apply random brightness and contrast adjustments.")
-zoom = st.checkbox("Ultra Zoom", value=True, help="Zoom into the image very closely.")
-black_and_white = st.checkbox("Black and White", value=True, help="Convert the image to black and white.")
+rotate = st.checkbox("Rotate", value=False, help="Rotate the image randomly within a specified range.")
+horizontal_flip = st.checkbox("Horizontal Flip", value=False, help="Tilt the image horizontally.")
+vertical_flip = st.checkbox("Vertical Flip", value=False, help="Flip the image vertically.")
+brightness_contrast = st.checkbox("Random Brightness/Contrast", value=False, help="Apply random brightness and contrast adjustments.")
+zoom = st.checkbox("Ultra Zoom", value=False, help="Zoom into the image very closely.")
+black_and_white = st.checkbox("Black and White", value=False, help="Convert the image to black and white.")
 
 
 
