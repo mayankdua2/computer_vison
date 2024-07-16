@@ -48,7 +48,6 @@ st.markdown("""
     </style>
 """, unsafe_allow_html=True)
 
-# Checkbox options for augmentations
 rotate = st.checkbox("Rotate", value=False, help="Rotate the image randomly within a specified range.")
 horizontal_flip = st.checkbox("Horizontal Flip", value=False, help="Tilt the image horizontally.")
 vertical_flip = st.checkbox("Vertical Flip", value=False, help="Flip the image vertically.")
@@ -59,7 +58,6 @@ black_and_white = st.checkbox("Black and White", value=False, help="Convert the 
 
 
 
-# Build the augmentation pipeline based on user's selection
 augmentation_list = []
 if rotate:
     augmentation_list.append(A.Rotate(limit=90, p=1.0))  # Always apply rotation up to 90 degrees
@@ -76,7 +74,7 @@ if black_and_white:
 
 augmentation_pipeline = A.Compose(augmentation_list)
 
-# Function to apply augmentations
+
 def augment_image(image, augmentation):
     image_np = np.array(image)
     augmented = augmentation(image=image_np)['image']
@@ -107,7 +105,7 @@ if uploaded_files:
 
     zip_buffer.seek(0)
 
-    # Provide a download button for the zip file
+
     st.download_button(
         label="Download Augmented Images as ZIP",
         data=zip_buffer,
